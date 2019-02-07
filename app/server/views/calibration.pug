@@ -1,0 +1,22 @@
+
+extends layout
+
+block content
+	div.rowContainer#rowContainer
+	include modals/alert
+	div.spinner-border.hidden.center#spinner(role="status")
+		span.sr-only Loading...
+
+block scripts
+	script.
+		allowFaceCollect=!!"#{faceCollect}";
+		name="#{name}";
+		user="#{user}";
+		storedRegressionData="#{regressionData}".replace(/&quot;/g, "\"");
+		logTimestamp=`${Date.now()}`;
+	script(src='/js/controllers/websocketController.js')
+	script(src='/js/views/calibration.js')
+	script(src='/js/controllers/calibrationController.js')
+	script(src='/js/libraries/webgazer.js')
+
+	

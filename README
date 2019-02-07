@@ -1,0 +1,19 @@
+Author: Luc Gruska
+Student #: 100982183
+Date: 17/04/2019
+
+Prerequisites:
+    - NodeJS
+    - MongoDB
+
+Note: This webapp runs best in Chrome
+
+Setting up the webapp:
+    1) open a shell
+    1) navigate to the project directory
+    1) run "npm install"
+
+Running the webapp:
+    1) Make sure that MongoDB running (To start use shell cmd: mongod)
+    2) Open a shell and run: nodejs app.js
+    3) Go to https://localhost:3000 in the Chrome browser

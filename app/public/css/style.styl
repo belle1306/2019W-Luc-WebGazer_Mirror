@@ -43,7 +43,7 @@ label, h6 {
 */
 
 #login{
-	width: 380px;
+	width: auto;
 	.btn{
 		float: left;
 		width: 48%;
@@ -148,11 +148,156 @@ label, h6 {
 }
 
 .center-vertical{
-	top 50%; left 50%
+	top 50%;
+	left 50%
 	position: absolute;
 	-webkit-transform: translate(-50%, -50%);
 	-ms-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 }
 
+.centerAlign {
+    align-self: center;
+}
 
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	top 50%;
+	left 50%
+	position: absolute;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.trainDot {
+	position: relative;
+	cursor: pointer;
+	height: 25px;
+	width: 25px;
+	border-radius: 50%;
+	user-select: none;
+	text-align: center;
+	z-index: 9999999;
+}
+
+.yellow {
+	background-color: yellow;
+}
+
+.green {
+	background-color: green;
+}
+
+.row {
+	position: relative;
+	display: flex;
+	margin: 0;
+	justify-content: space-between;
+	height: auto;
+	width: 100%;
+}
+
+.rowContainer {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: stretch;
+	justify-content: space-between;
+	flex-direction: column;
+	z-index: 999;
+}
+
+.questionContainer {
+	color: black;
+	display: flex;
+	flex-flow: wrap;
+	font-size: x-small;
+	max-width: 150px;
+	min-width: 150px;
+	max-height: 30px;
+	min-height: 30px;
+	background-color: rgba(200,200,200,0.6);
+	z-index: 100;
+}
+.answerContainer {
+	align-self: flex-end;
+	width: 100%;
+}
+.question {
+	width: 50%;
+	background-color: rgba(255,255,255,0.6);
+}
+.survey {
+	padding: 50px;
+	width: 960px;
+	height: 720px;
+	background-color: rgba(255,255,255,0.6);
+}
+
+.survey .btn {
+	background-color: #007bff;
+	color: #f8f9fa;
+}
+.survey .btn:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+.front {
+	z-index: 9999;
+}
+
+.spaceRight {
+	margin-right: 25px;
+}
+.nav-item {
+	margin-right: 5px;
+}
+
+body > video, body > canvas{
+	left: auto !important;
+	right: 0px;
+	margin-top: 0px;
+	visibility: visible;
+}
+
+body > video.hide, body > canvas.hide  {
+	visibility: hidden;
+}
+
+.btn.toggleVideo {
+	position: fixed;
+	top: 180px;
+	right: 0px;
+	width: 240px;
+}
+
+.btn.toggleVideo.hide {
+	top: 0px;
+}
+
+@keyframes buttonUp {
+  from {top: 180px;}
+  to {top: 0px;}
+}
+
+@keyframes buttonDown {
+  from {top: 0px;}
+  to {top: 180px;}
+}
+
+@keyframes videoUp {
+  from {top: 0px;}
+  to {top: -179px;}
+}
+
+@keyframes videoDown {
+  from {top: -179px;}
+  to {top: 0px;}
+}

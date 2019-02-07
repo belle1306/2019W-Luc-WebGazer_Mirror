@@ -5,7 +5,8 @@
 	* Copyright (c) 2013-2018 Stephen Braitsch
 **/
 
-var http = require('http');
+var fs = require('fs');
+var https = require('https');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -42,13 +43,20 @@ app.use(session({
 	proxy: true,
 	resave: true,
 	saveUninitialized: true,
+	cookie: {
+        secure: true,
+        maxAge: 864000000 // 10 Days in miliseconds
+    },
 	store: new MongoStore({ url: process.env.DB_URL })
 	})
 );
 
 require('./app/server/routes')(app);
 
-http.createServer(app).listen(app.get('port'), function(){
+https.createServer({
+	key: fs.readFileSync('server.key'),
+	cert: fs.readFileSync('server.cert')
+  }, app).listen(app.get('port'), function(){
 	console.log('Express server listening on port ' + app.get('port'));
 });
 

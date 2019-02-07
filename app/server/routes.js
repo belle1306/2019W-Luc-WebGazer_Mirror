@@ -2,9 +2,36 @@
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var EM = require('./modules/email-dispatcher');
+var fs = require('fs')
+var WebSocket = require('ws')
+var https = require('https')
+
+const server = https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+  }).listen(8080);
+
+const wss = new WebSocket.Server({ server });
 
 module.exports = function(app) {
 
+/*
+	Helpers
+*/
+const attemptAutoLogin = (req, res, redirect) => {
+	AM.validateLoginKey(req.cookies.login, req.ip, function(e, o){
+		if (o){
+			AM.autoLogin(o.user, o.pass, function(o){
+				req.session.user = o;
+				res.redirect(redirect);
+			});
+		}	else{
+			res.render('login', { title: 'Hello - Please Login To Your Account' });
+		}
+	});
+};
+
+	
 /*
 	login & logout
 */
@@ -15,16 +42,7 @@ module.exports = function(app) {
 			res.render('login', { title: 'Hello - Please Login To Your Account' });
 		}	else{
 	// attempt automatic login //
-			AM.validateLoginKey(req.cookies.login, req.ip, function(e, o){
-				if (o){
-					AM.autoLogin(o.user, o.pass, function(o){
-						req.session.user = o;
-						res.redirect('/home');
-					});
-				}	else{
-					res.render('login', { title: 'Hello - Please Login To Your Account' });
-				}
-			});
+			attemptAutoLogin(req, res, "/introduction");
 		}
 	});
 	
@@ -76,7 +94,8 @@ module.exports = function(app) {
 				name	: req.body['name'],
 				email	: req.body['email'],
 				pass	: req.body['pass'],
-				country	: req.body['country']
+				country	: req.body['country'],
+				faceCollect : req.body['faceCollect']
 			}, function(e, o){
 				if (e){
 					res.status(400).send('error-updating-account');
@@ -86,6 +105,21 @@ module.exports = function(app) {
 				}
 			});
 		}
+	});
+
+/* 
+	Clear calibration
+*/
+	app.post('/clearCalibration', function(req, res) {
+		AM.clearRegressionData(
+			req.session.user.user,
+			(e, o) => {
+				if (e){
+					res.status(400).send(e);
+				} else {
+					res.status(200).send('ok');
+				}
+		});
 	});
 
 /*
@@ -102,7 +136,8 @@ module.exports = function(app) {
 			email 	: req.body['email'],
 			user 	: req.body['user'],
 			pass	: req.body['pass'],
-			country : req.body['country']
+			country : req.body['country'],
+			faceCollect : req.body['faceCollect']
 		}, function(e){
 			if (e){
 				res.status(400).send(e);
@@ -187,6 +222,174 @@ module.exports = function(app) {
 		});
 	});
 	
-	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
+	/*
+		Calibration
+	*/
+
+	app.get('/calibration', async (req, res) => {
+		if(!req.session.user){ // If not logged in
+			res.redirect('/');
+		} else{
+			try {
+				const user = await AM.findAccount(req.session.user._id, (err, object) => { // Enforces the use of the newest version of the user object
+					if(!object) {
+						return;
+					}
+					req.session.user = object;
+					res.render('calibration',
+						{
+							name: req.session.user.name,
+							user: req.session.user.user,
+							regressionData: req.session.user.regressionData,
+							faceCollect: false
+						}
+					);
+				});
+			} catch (e) {
+				console.error(e);
+				res.render('calibration');
+			}
+		}
+	});
+
+
+	/*
+		Data Collection
+	*/
+
+	app.get('/dataCollection', async (req, res) => {
+		if(!req.session.user){ // If not logged in
+			res.redirect('/');
+		} else{
+			try {
+				const user = await AM.findAccount(req.session.user._id, (err, object) => { // Enforces the use of the newest version of the user object
+					if(!object) {
+						return;
+					}
+					req.session.user = object;
+					res.render('dataCollection',
+						{
+							name: req.session.user.name,
+							user: req.session.user.user,
+							regressionData: req.session.user.regressionData,
+							faceCollect: req.session.user.faceCollect
+						}
+					);
+				});
+			} catch (e) {
+				console.error(e);
+				res.render('dataCollection',
+					{
+						name: "error",
+						user: "error",
+						regressionData: req.session.user.regressionData,
+						faceCollect: req.session.user.faceCollect
+					}
+				);
+			}
+		}
+	});
+
+	/*
+		Introduction
+	*/
+
+	app.get('/introduction', function(req, res) {
+		if(!req.session.user){ // If not logged in
+			attemptAutoLogin(req, res, "/introduction");
+		} else{
+			res.render('introduction', {title: 'introduction', name: req.session.user.name});
+		}
+	});
+
+	/*
+		Introduction
+	*/
+
+	app.get('/cameraSetup', function(req, res) {
+		if(!req.session.user){ // If not logged in
+			attemptAutoLogin(req, res, "/cameraSetup");
+		} else{
+			res.render('cameraSetup', {title: 'cameraSetup'});
+		}
+	});
+
+	/*
+		404 page
+	*/
+
+	app.get('*', function(req, res) {
+		res.redirect('/'); // Redirect to login if page does not exist
+	});
+
+	/*
+		Write userdata
+	*/
+	const appendToLog = (filePath, data) => { // Move to util file?
+		var writeStream = fs.createWriteStream(`./logs/${filePath}/gazeLog.csv`, {flags:'a'});
+		writeStream.write(data);
+		writeStream.on('error', function (err) {
+			console.log(err);
+		});
+		writeStream.end()
+	}
+	const writeSurveyAnswers = (filePath, data) => { // Move to util file?
+		var writeStream = fs.createWriteStream(`./logs/${filePath}/surveyAnswers.json`);
+		writeStream.write(data);
+		writeStream.on('error', function (err) {
+			console.log(err);
+		});
+		writeStream.end()
+	}
+	const writeImage = (filePath, data, timestamp) => { // Move to util file?
+		var writeStream = fs.createWriteStream(`./logs/${filePath}/faces/${timestamp}.png`, {encoding: 'base64'});
+		writeStream.write(data);
+		writeStream.on('error', function (err) {
+			console.log(err);
+		});
+		writeStream.end();
+	}
+	const createDirectory = (dir) => { // Move to util file?
+		try {
+			fs.statSync(dir);
+		} catch(e) {
+			fs.mkdirSync(dir);
+		}
+	  }
+
+	wss.on('connection', ws => {
+		console.log("new connection");
+		ws.on('message', packet => {
+			data = JSON.parse(packet);
+			switch(data.command) {
+				case "append":
+					appendToLog(data.logPath, data.data);
+					break;
+				case "image":
+					writeImage(data.logPath, data.data, data.timestamp);
+					break;
+				case "open":
+					createDirectory(`./logs/${data.name}`);
+					createDirectory(`./logs/${data.name}/${data.timestamp}`);
+					createDirectory(`./logs/${data.name}/${data.timestamp}/faces`);
+					break;
+				case "storeSurvey":
+					writeSurveyAnswers(data.logPath, data.data);
+					break;
+				case "storeRegression":
+					AM.updateRegressionData(
+						data.user,
+						data.data,
+						(e, o) => {
+							if (e){
+								console.log(`Error: store regression data. User: ${o.value.user} \n ${e}`);
+							} else {
+								console.log(`Success: store regression data. User:${o.value.user}`);
+							}
+					});
+					break;
+			}
+		})
+	})
 
 };

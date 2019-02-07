@@ -1,0 +1,37 @@
+
+extends layout
+
+block content
+	nav.navbar.navbar-expand.navbar-light.bg-light
+		.nav-item
+			.navbar-brand Control Panel
+		.navbar-nav.ml-auto
+			.nav-item
+				button.btn.navbar-btn.btn-outline-dark#btn-edit Edit Account
+			.nav-item
+				button.btn.navbar-btn.btn-outline-dark#btn-clear Clear Calibration Data
+			.nav-item
+				button.btn.navbar-btn.btn-outline-dark#btn-logout Sign Out
+
+		#account-form-container.center-vertical(style='width:420px; transform: translate(-50%, 25%);')
+			div.card.card-body.bg-light#account-form
+				h2
+				h6#sub Please select the camera source you would like to use
+				hr
+				video.centerAlign(muted, autoplay, width="320", height="240")
+				hr
+				.form-group.row.margin-zero
+					label.col-sm-3.col-form-label.col-form-label-sm Camera source
+					.col-sm-9
+						select.custom-select#cameraSource(name='cameraSource')
+				hr
+				.form-buttons
+					button(type='button').btn.btn-outline-dark#btn-back Back
+					button(type='button').btn.btn-primary#btn-setCamera Update
+	include modals/alert
+	include modals/confirm
+
+block scripts
+	script(src='/js/controllers/bannerController.js')
+	script(src='/js/controllers/cameraSetupController.js')
+	script(src='/js/views/cameraSetup.js')

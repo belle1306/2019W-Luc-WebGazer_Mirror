@@ -4,7 +4,7 @@
 // store the userId on the client side in a hidden input field //
 input(type='hidden', value= user._id)#userId
 
-#account-form-container.center-vertical
+#account-form-container.center-vertical(style='width:565px')
 	form.card.card-body.bg-light(method='post')#account-form
 		h2
 		h6#sub Please tell us a little about yourself.
@@ -36,6 +36,10 @@ input(type='hidden', value= user._id)#userId
 			.col-sm-9
 				input.form-control#pass-tf(type='password', name='pass', value='')
 
+		.form-group.row
+			label.col-sm-auto.col-form-label.col-form-label-sm Allow collection of images of your face from your webcam feed
+			.col-sm-2
+				input.form-control#faceCollect-tf(type='checkbox', name='faceCollect', checked=!!user.faceCollect)
 		hr
 		.form-buttons
 			button(type='button')#account-form-btn1.btn.btn-outline-dark

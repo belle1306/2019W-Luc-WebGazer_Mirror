@@ -1,0 +1,30 @@
+
+extends layout
+
+block content
+	include modals/alert
+	button.btn.btn-primary.toggleVideo(style="border-radius: unset", next="Open") Close Webcam Feed
+	div.survey
+		hr
+		div#surveyContainer
+		center
+			button.btn.navbar-btn.btn-outline-dark.hidden#btn-logout Sign Out
+		hr
+
+
+block scripts
+	script.
+		allowFaceCollect=!!"#{faceCollect}";
+		name="#{name}";
+		user="#{user}";
+		storedRegressionData="#{regressionData}".replace(/&quot;/g, "\"");
+		logTimestamp=`${Date.now()}`;
+	script(src='/js/libraries/survey.jquery.min.js')
+	script(src='/js/controllers/surveyController.js')
+	script(src='/js/controllers/attentionController.js')
+	script(src='/js/controllers/websocketController.js')
+	script(src='/js/controllers/bannerController.js')
+	script(src='/js/libraries/webgazer.js')
+	script(src='/js/views/dataCollection.js')
+
+	

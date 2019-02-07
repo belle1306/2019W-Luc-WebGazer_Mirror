@@ -11,6 +11,8 @@ block content
 					th(style='width:220px') Username
 					th(style='width:240px') Location
 					th Account Created
+					th Allow face collection?
+					th Regression data stored?
 			tbody
 			- for (var i = 0; i < accts.length; i++)
 				tr
@@ -19,3 +21,5 @@ block content
 					td= accts[i].user
 					td= accts[i].country
 					td= accts[i].date
+					td= accts[i].faceCollect
+					td= !!accts[i].regressionData

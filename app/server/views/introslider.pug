@@ -1,0 +1,65 @@
+
+// preset form values if we receive a userdata object //
+- user = typeof(udata) != 'undefined' ? udata : { }
+// store the userId on the client side in a hidden input field //
+input(type='hidden', value= user._id)#userId
+
+.intro-container.center-vertical
+	form.card.card-body.bg-light(method='post')
+		div#content
+		.form-buttons
+			button(type='button')#back.btn.btn-outline-dark.hidden Back
+			button(type='button')#next.btn.btn-primary Continue
+
+	div#slide0.hidden
+		h5 Agreement
+		hr
+		h6 By continuing you agree to the collection of webcam feed data which allows for the prediction of your eye's gaze upon the screen for the full duration in which you interact with this webapp
+		hr
+
+	div#slide1.hidden
+		h5 Hi #{name}
+		hr
+		h6 Before we start, here are a few things you need to know
+		h6 While interacting with this project, gaze tracking is used to track where you're looking at on the screen. This requires some setup, which we will prepare you for within the next few slides.
+		hr
+
+	div#slide2.hidden
+		h5 Setting up gaze tracking
+		hr
+		h6 1) For best gaze prediction your face must be within the suggested box in the video feed. A green border implies that you've positioned yourself correctly, while a red border means that your face is not centered in the video feed.
+		hr
+		center
+			img(src='/images/faceExample.jpg' , alt='example face' width="150" height="150")
+		hr
+		h6 2) Don't begin calibration until the green face outline matches your face correctly in the video feed.
+		hr
+		h6 3) Sit close to the webcam, the closer your face is to the webcam the better the gaze prediction
+		hr
+		
+	div#slide4.hidden
+		h5 Attention checks
+		hr
+		h6 If your gaze is pointed away from the screen a sound will be played to notify you. Press play below to sample the sound.
+		audio(controls='')
+			source(src='/audio/ding.mp3', type='audio/mp3')
+		hr
+
+	div#slide5.hidden
+		h5 Calibration tips to remember
+		hr
+		h6 1) On the next page you'll enter calibration. On this page a red dot displays your current gaze prediction. 
+		hr
+		h6 2) Remember to center yourself within the suggested box, and have the green face outline match your face before you begin.
+		hr
+		h6 3) To complete calibration you must answer every question on the page.
+		hr
+
+
+	div#slide6.hidden
+		h5 Okay, now you're ready to begin calibration
+		hr
+
+// display form errors in a custom modal window //
+
+include modals/form-errors

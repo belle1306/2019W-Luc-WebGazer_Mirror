@@ -1,24 +1,25 @@
-
 extends layout
 
 block content
 	nav.navbar.navbar-expand.navbar-light.bg-light
 		.nav-item
-			.navbar-brand Control Panel
+			.navbar-brand Introduction
 		.navbar-nav.ml-auto
+			.nav-item
+				button.btn.navbar-btn.btn-outline-dark#btn-edit Edit Account
 			.nav-item
 				button.btn.navbar-btn.btn-outline-dark#btn-camera Camera Options
 			.nav-item
 				button.btn.navbar-btn.btn-outline-dark#btn-clear Clear Calibration Data
 			.nav-item
 				button.btn.navbar-btn.btn-outline-dark#btn-logout Sign Out
-
-	include account
+	include introslider
 	include modals/alert
-	include modals/confirm
 
 block scripts
-	script(src='/js/views/home.js')
+	script.
+		name="#{name}";
+		currentSlide=0;
+	script(src='/js/controllers/introductionController.js')
+	script(src='/js/views/introduction.js')
 	script(src='/js/controllers/bannerController.js')
-	script(src='/js/controllers/homeController.js')
-	script(src='/js/form-validators/accountValidator.js')

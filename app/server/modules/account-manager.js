@@ -120,7 +120,9 @@ exports.updateAccount = function(newData, callback)
 		var o = {
 			name : data.name,
 			email : data.email,
-			country : data.country
+			country : data.country,
+			faceCollect : data.faceCollect,
+			regressionData : data.regressionData
 		}
 		if (data.pass) o.pass = data.pass;
 		accounts.findOneAndUpdate({_id:getObjectId(data.id)}, {$set:o}, {returnOriginal : false}, callback);
@@ -134,13 +136,25 @@ exports.updateAccount = function(newData, callback)
 		});
 	}
 }
-
+exports.findAccount = function(id, callback) {
+	accounts.findOne({_id:getObjectId(id)}, callback);
+}
 exports.updatePassword = function(passKey, newPass, callback)
 {
 	saltAndHash(newPass, function(hash){
 		newPass = hash;
 		accounts.findOneAndUpdate({passKey:passKey}, {$set:{pass:newPass}, $unset:{passKey:''}}, {returnOriginal : false}, callback);
 	});
+}
+
+exports.updateRegressionData = function(user, newRegressionData, callback)
+{
+	accounts.findOneAndUpdate({user:user}, {$set:{regressionData:newRegressionData}}, {returnOriginal : false}, callback);
+}
+
+exports.clearRegressionData = function(user, callback)
+{
+	accounts.findOneAndUpdate({user:user}, {$set:{regressionData:""}}, {returnNewDocument : true}, callback);
 }
 
 /*
